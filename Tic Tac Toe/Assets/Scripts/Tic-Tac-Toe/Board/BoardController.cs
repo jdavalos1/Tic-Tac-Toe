@@ -7,6 +7,9 @@ public class BoardController : MonoBehaviour
     public Material[] tileMats;
     public GameObject tileModel;
     public bool oTurn;
+
+    [Min(3)]
+    public int minRowsCols;
     
     private List<GameObject> tiles;
     private int numberOfRowsColumns;
@@ -14,7 +17,7 @@ public class BoardController : MonoBehaviour
     void Awake()
     {
         var gameInfo = GameObject.Find("Game Info");
-        numberOfRowsColumns = gameInfo == null ? 3 : gameInfo.GetComponent<GameInfo>().rowsCols;
+        numberOfRowsColumns = gameInfo == null ? minRowsCols : gameInfo.GetComponent<GameInfo>().rowsCols;
     }
     // Start is called before the first frame update
     void Start()
@@ -29,6 +32,7 @@ public class BoardController : MonoBehaviour
         }
     }
 
+    // Adds a tile to the overall board
     void AddTile(int i)
     {
         // Position of board piece
@@ -42,7 +46,6 @@ public class BoardController : MonoBehaviour
         var nextMat = tileMats[i % 2];
         if(row < numberOfRowsColumns)
         {
-            Debug.Log(row);
             nextMat = tiles[i - numberOfRowsColumns].GetComponent<Renderer>().material.color == tileMats[0].color ? tileMats[1] : tileMats[0];
         }
         tile.GetComponent<Renderer>().material = nextMat;
@@ -51,7 +54,8 @@ public class BoardController : MonoBehaviour
 
         tiles.Add(tile);
     }
-
+    
+    // Checks for wins on the board (rows, columns, diagonals)
     public void CheckWin()
     {
         char currentPlayer = oTurn ? 'o' : 'x';
@@ -64,7 +68,7 @@ public class BoardController : MonoBehaviour
             count = 0;
             
             // Row comparison
-            while (tiles[index].GetComponent<TilePlace>().CurrentPiece == currentPlayer && count < numberOfRowsColumns)
+            while (index < tiles.Count && tiles[index].GetComponent<TilePlace>().CurrentPiece == currentPlayer)
             {
                 count++;
                 index = numberOfRowsColumns * (++row) + i;
@@ -84,7 +88,7 @@ public class BoardController : MonoBehaviour
             count = 0;
             
             // Col comparison
-            while (tiles[index].GetComponent<TilePlace>().CurrentPiece == currentPlayer && count < numberOfRowsColumns)
+            while (index < tiles.Count && tiles[index].GetComponent<TilePlace>().CurrentPiece == currentPlayer)
             {
                 count++;
                 index = numberOfRowsColumns * i + (++col);
@@ -102,7 +106,7 @@ public class BoardController : MonoBehaviour
         col = 0;
         index = 0;
         count = 0;
-        while(count < numberOfRowsColumns && tiles[index].GetComponent<TilePlace>().CurrentPiece == currentPlayer)
+        while(index < tiles.Count && tiles[index].GetComponent<TilePlace>().CurrentPiece == currentPlayer)
         {
             count++;
             index = numberOfRowsColumns * (++row) + (++col);
@@ -118,7 +122,7 @@ public class BoardController : MonoBehaviour
         col = numberOfRowsColumns - 1;
         index = numberOfRowsColumns * row + col;
         count = 0;
-        while(count < numberOfRowsColumns && tiles[index].GetComponent<TilePlace>().CurrentPiece == currentPlayer)
+        while(index < tiles.Count && tiles[index].GetComponent<TilePlace>().CurrentPiece == currentPlayer)
         {
             count++;
             index = numberOfRowsColumns * (++row) + (--col);
@@ -130,5 +134,23 @@ public class BoardController : MonoBehaviour
             return;
         }
         oTurn = !oTurn;
+
+        if (CheckDraw())
+        {
+            Debug.Log("Draw");
+        }
+    }
+
+    private bool CheckDraw()
+    {
+        int check = 0;
+        // Linearly go through all the values until an empty space is found
+        foreach(var tile in tiles)
+        {
+            if (tile.GetComponent<TilePlace>().CurrentPiece == 'e') break;
+            check++;
+        }
+
+        return check == tiles.Count;
     }
 }

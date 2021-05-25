@@ -356,10 +356,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61716c495f092734d8804ace0cb2f9f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numberOfRowsColumns: 3
   tileMats:
   - {fileID: 2100000, guid: 7e8a488b2ab3bc141802182e1c11b467, type: 2}
   - {fileID: 2100000, guid: aae77bc854ae7a54cadc80282f4fe0e1, type: 2}
   tileModel: {fileID: 7869499516026782710, guid: dfdf973249947c549b5d1619623075d8,
     type: 3}
   oTurn: 0
+  minRowsCols: 3
