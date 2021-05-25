@@ -14,7 +14,7 @@ public class BoardController : MonoBehaviour
     void Awake()
     {
         var gameInfo = GameObject.Find("Game Info");
-        numberOfRowsColumns = gameInfo == null ? 5 : gameInfo.GetComponent<GameInfo>().rowsCols;
+        numberOfRowsColumns = gameInfo == null ? 3 : gameInfo.GetComponent<GameInfo>().rowsCols;
     }
     // Start is called before the first frame update
     void Start()
@@ -29,12 +29,6 @@ public class BoardController : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     void AddTile(int i)
     {
         // Position of board piece
@@ -42,9 +36,16 @@ public class BoardController : MonoBehaviour
         int row = numberOfRowsColumns - (i / numberOfRowsColumns);
         var tilePosition = new Vector3(col, row, 0);
         GameObject tile = Instantiate(tileModel, tilePosition, tileModel.transform.rotation);
-
         tile.transform.SetParent(transform, false);
-        tile.GetComponent<Renderer>().material = tileMats[i % 2];
+
+        // Get the new tile but if it's the first row set it up otherwise use the prev row's opposite
+        var nextMat = tileMats[i % 2];
+        if(row < numberOfRowsColumns)
+        {
+            Debug.Log(row);
+            nextMat = tiles[i - numberOfRowsColumns].GetComponent<Renderer>().material.color == tileMats[0].color ? tileMats[1] : tileMats[0];
+        }
+        tile.GetComponent<Renderer>().material = nextMat;
 
         tile.name = $"{i}";
 
