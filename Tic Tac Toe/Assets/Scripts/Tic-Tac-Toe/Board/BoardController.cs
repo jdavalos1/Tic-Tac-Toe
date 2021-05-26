@@ -58,7 +58,6 @@ public class BoardController : MonoBehaviour
         tile.name = $"{i}";
 
         tiles.Add(tile);
-        inGameUI.SwapTurn(oTurn);
     }
     
     // Checks for wins on the board (rows, columns, diagonals)
