@@ -269,12 +269,12 @@ GameObject:
   - component: {fileID: 273213626}
   - component: {fileID: 273213625}
   m_Layer: 5
-  m_Name: Draw Panel
+  m_Name: End Game Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &273213624
 RectTransform:
   m_ObjectHideFlags: 0
@@ -484,7 +484,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Draw: No One Wins'
+  m_Text: 
 --- !u!222 &656238904
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1154,7 +1154,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   turnText: {fileID: 1364157540}
-  drawPanel: {fileID: 273213623}
+  endGamePanel: {fileID: 273213623}
+  panelMats:
+  - {fileID: 2100000, guid: 3964a383820d18d43bd1e56103235c07, type: 2}
+  - {fileID: 2100000, guid: 08ead10823210aa4187297f55014dbb7, type: 2}
+  - {fileID: 2100000, guid: 1cdee055f6179a74ba375a8c97bc6534, type: 2}
 --- !u!1 &1997859392
 GameObject:
   m_ObjectHideFlags: 0
