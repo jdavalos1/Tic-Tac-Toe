@@ -4,10 +4,18 @@ using UnityEngine;
 
 public class GameInfo : MonoBehaviour
 {
+    public static GameInfo Instance; 
     void Awake()
     {
         // We need the gameinfo to surivive when we load the starting game
-        DontDestroyOnLoad(gameObject);
+        if(Instance == null) {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     [Min(3)]

@@ -30,6 +30,7 @@ public class InGameUI : MonoBehaviour
             t.GetComponent<Text>().text = "O Wins!!";
             endGamePanel.GetComponent<Image>().material = panelMats[2];
         }
+        endGamePanel.SetActive(true);
     }
     /// <summary>
     /// Show the panel to signify a draw

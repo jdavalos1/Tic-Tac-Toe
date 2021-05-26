@@ -187,6 +187,8 @@ public class BoardController : MonoBehaviour
                                                             line.transform.localRotation.z + angle.z);
             yield return new WaitForSeconds(0.5f);
         }
+
+        inGameUI.ShowWin(oTurn);
     }
 
     IEnumerator DisableTilePlace()
