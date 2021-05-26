@@ -36,8 +36,10 @@ public class BoardController : MonoBehaviour
             AddTile(i);
         }
     }
-
-    // Adds a tile to the overall board
+    /// <summary>
+    /// Add a tile to the board list
+    /// </summary>
+    /// <param name="i">The index of the tile (used for finding row and col)</param>
     void AddTile(int i)
     {
         // Position of board piece
@@ -60,7 +62,9 @@ public class BoardController : MonoBehaviour
         tiles.Add(tile);
     }
     
-    // Checks for wins on the board (rows, columns, diagonals)
+    /// <summary>
+    /// Check if there are wins after a tile has been pressed
+    /// </summary>
     public void CheckWin()
     {
         char currentPlayer = oTurn ? 'o' : 'x';
@@ -83,7 +87,7 @@ public class BoardController : MonoBehaviour
             }
             if(count == numberOfRowsColumns)
             {
-                StartCoroutine(WinnerLine(potentialTiles, new Vector3(0, 0, 0)));
+                StartWin(new Vector3(0, 0, 0), potentialTiles);
                 return;
             }
         }
@@ -106,7 +110,7 @@ public class BoardController : MonoBehaviour
 
             if(count == numberOfRowsColumns)
             {
-                StartCoroutine(WinnerLine(potentialTiles, new Vector3(0, 90, 0)));
+                StartWin(new Vector3(0, 90, 0), potentialTiles);
                 return;
             }
         }
@@ -126,7 +130,7 @@ public class BoardController : MonoBehaviour
         }
         if(count == numberOfRowsColumns)
         {
-            StartCoroutine(WinnerLine(potentialTiles, new Vector3(0, -45, 0)));
+            StartWin(new Vector3(0, -45, 0), potentialTiles);
             return;
         }
 
@@ -146,7 +150,7 @@ public class BoardController : MonoBehaviour
         
         if (count == numberOfRowsColumns)
         {
-            StartCoroutine(WinnerLine(potentialTiles, new Vector3(0, 45, 0)));
+            StartWin(new Vector3(0, 45, 0), potentialTiles);
             return;
         }
 
@@ -157,8 +161,24 @@ public class BoardController : MonoBehaviour
         oTurn = !oTurn;
         inGameUI.SwapTurn(oTurn);
     }
+    
+    /// <summary>
+    /// Start showing the winning process
+    /// </summary>
+    /// <param name="angle">Angle for the line rotation</param>
+    /// <param name="winningTiles">The list of tiles that are part of the winning set</param>
+    private void StartWin(Vector3 angle, List<GameObject> winningTiles)
+    {
+        // First disable so that the user can no longer add pieces
+        DisableTilePlace();
+        // Start a coroutine to show the winning pieces
+        StartCoroutine(WinnerLine(winningTiles, angle));
+    }
 
-    // Check if the board in the case of a draw
+    /// <summary>
+    /// Check for draws in the board
+    /// </summary>
+    /// <returns>Whether there are draws or not</returns>
     private bool CheckDraw()
     {
         int check = 0;
@@ -172,7 +192,12 @@ public class BoardController : MonoBehaviour
         return check == tiles.Count;
     }
 
-    // Add a line on the board to show the user where they've won
+    /// <summary>
+    /// Add the lining showing the winner
+    /// </summary>
+    /// <param name="winnerTiles">List of tiles used by the winner</param>
+    /// <param name="angle">Rotation angle for the line (i.e. diagonal win is 45 in the y) </param>
+    /// <returns>Nothing</returns>
     IEnumerator WinnerLine(List<GameObject> winnerTiles, Vector3 angle)
     {
         foreach(var t in winnerTiles)
@@ -184,18 +209,20 @@ public class BoardController : MonoBehaviour
             line.transform.localRotation = Quaternion.Euler(line.transform.localRotation.x + angle.x,
                                                             line.transform.localRotation.y + angle.y,
                                                             line.transform.localRotation.z + angle.z);
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.25f);
         }
 
         inGameUI.ShowWin(oTurn);
     }
 
-    IEnumerator DisableTilePlace()
+    /// <summary>
+    /// Disable all the place tile scripts
+    /// </summary>
+    void DisableTilePlace()
     {
         foreach(var t in tiles)
         {
             t.GetComponent<TilePlace>().enabled = false;
-            yield return null;
         }
     }
 }

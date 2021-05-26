@@ -6,6 +6,7 @@ public class TilePlace : MonoBehaviour
 {
     public char CurrentPiece;
     private BoardController control;
+
     void Start()
     {
         CurrentPiece = 'e';
@@ -14,6 +15,9 @@ public class TilePlace : MonoBehaviour
 
     void OnMouseDown()
     {
+        // Are we enabled to place?
+        if (!enabled) return;
+
         // If it's not empty can't put one
         if (CurrentPiece != 'e') return;
 
