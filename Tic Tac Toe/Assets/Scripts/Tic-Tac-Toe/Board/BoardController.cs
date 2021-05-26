@@ -1,28 +1,33 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BoardController : MonoBehaviour
 {
     public Material[] tileMats;
     public GameObject tileModel;
-    public bool oTurn;
+    public GameObject lineModel;
+    public bool oTurn = false;
+    public Text text;
 
     [Min(3)]
     public int minRowsCols;
     
     private List<GameObject> tiles;
     private int numberOfRowsColumns;
+    private InGameUI inGameUI;
 
     void Awake()
     {
         var gameInfo = GameObject.Find("Game Info");
+        inGameUI = GameObject.Find("In-Game UI").GetComponent<InGameUI>();
         numberOfRowsColumns = gameInfo == null ? minRowsCols : gameInfo.GetComponent<GameInfo>().rowsCols;
     }
     // Start is called before the first frame update
     void Start()
     {
-        oTurn = false;
+        inGameUI.SwapTurn(oTurn);
         tiles = new List<GameObject>();
         int total = numberOfRowsColumns * numberOfRowsColumns;
 
@@ -53,6 +58,7 @@ public class BoardController : MonoBehaviour
         tile.name = $"{i}";
 
         tiles.Add(tile);
+        inGameUI.SwapTurn(oTurn);
     }
     
     // Checks for wins on the board (rows, columns, diagonals)
@@ -60,22 +66,25 @@ public class BoardController : MonoBehaviour
     {
         char currentPlayer = oTurn ? 'o' : 'x';
         int count, index, row, col;
+        List<GameObject> potentialTiles;
         // Check columns
         for(int i = 0; i < numberOfRowsColumns; i++)
         {
             row = 0;
             index = numberOfRowsColumns * row + i;
             count = 0;
-            
+
+            potentialTiles = new List<GameObject>();
             // Row comparison
             while (index < tiles.Count && tiles[index].GetComponent<TilePlace>().CurrentPiece == currentPlayer)
             {
+                potentialTiles.Add(tiles[index]);
                 count++;
                 index = numberOfRowsColumns * (++row) + i;
             }
             if(count == numberOfRowsColumns)
             {
-                Debug.Log("Winner winner chicken dinner");
+                StartCoroutine(WinnerLine(potentialTiles, new Vector3(0, 0, 0)));
                 return;
             }
         }
@@ -87,16 +96,18 @@ public class BoardController : MonoBehaviour
             index = numberOfRowsColumns * i + col;
             count = 0;
             
+            potentialTiles = new List<GameObject>();
             // Col comparison
             while (index < tiles.Count && tiles[index].GetComponent<TilePlace>().CurrentPiece == currentPlayer)
             {
+                potentialTiles.Add(tiles[index]);
                 count++;
                 index = numberOfRowsColumns * i + (++col);
             }
 
             if(count == numberOfRowsColumns)
             {
-                Debug.Log("Winner winner chicken dinner");
+                StartCoroutine(WinnerLine(potentialTiles, new Vector3(0, 90, 0)));
                 return;
             }
         }
@@ -106,14 +117,17 @@ public class BoardController : MonoBehaviour
         col = 0;
         index = 0;
         count = 0;
+        potentialTiles = new List<GameObject>();
+
         while(index < tiles.Count && tiles[index].GetComponent<TilePlace>().CurrentPiece == currentPlayer)
         {
+            potentialTiles.Add(tiles[index]);
             count++;
             index = numberOfRowsColumns * (++row) + (++col);
         }
         if(count == numberOfRowsColumns)
         {
-            Debug.Log("Winner winner chicken dinner");
+            StartCoroutine(WinnerLine(potentialTiles, new Vector3(0, -45, 0)));
             return;
         }
 
@@ -122,25 +136,30 @@ public class BoardController : MonoBehaviour
         col = numberOfRowsColumns - 1;
         index = numberOfRowsColumns * row + col;
         count = 0;
+        potentialTiles = new List<GameObject>();
+
         while(index < tiles.Count && tiles[index].GetComponent<TilePlace>().CurrentPiece == currentPlayer)
         {
+            potentialTiles.Add(tiles[index]);
             count++;
             index = numberOfRowsColumns * (++row) + (--col);
         }
         
         if (count == numberOfRowsColumns)
         {
-            Debug.Log("Winner winner chicken dinner");
+            StartCoroutine(WinnerLine(potentialTiles, new Vector3(0, 45, 0)));
             return;
         }
-        oTurn = !oTurn;
 
         if (CheckDraw())
         {
-            Debug.Log("Draw");
+            inGameUI.ShowDraw();
         }
+        oTurn = !oTurn;
+        inGameUI.SwapTurn(oTurn);
     }
 
+    // Check if the board in the case of a draw
     private bool CheckDraw()
     {
         int check = 0;
@@ -152,5 +171,30 @@ public class BoardController : MonoBehaviour
         }
 
         return check == tiles.Count;
+    }
+
+    // Add a line on the board to show the user where they've won
+    IEnumerator WinnerLine(List<GameObject> winnerTiles, Vector3 angle)
+    {
+        foreach(var t in winnerTiles)
+        {
+            GameObject line = Instantiate(lineModel);
+            line.transform.parent = t.transform;
+            line.transform.localScale = new Vector3(0.1f, 1, 1);
+            line.transform.localPosition = new Vector3(0, 10, 0);
+            line.transform.localRotation = Quaternion.Euler(line.transform.localRotation.x + angle.x,
+                                                            line.transform.localRotation.y + angle.y,
+                                                            line.transform.localRotation.z + angle.z);
+            yield return new WaitForSeconds(0.5f);
+        }
+    }
+
+    IEnumerator DisableTilePlace()
+    {
+        foreach(var t in tiles)
+        {
+            t.GetComponent<TilePlace>().enabled = false;
+            yield return null;
+        }
     }
 }
