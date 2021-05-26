@@ -6,7 +6,7 @@ public class MainMenu : MonoBehaviour
 {
     public GameObject mainMenu;
     public GameObject optionsMenu;
-    public GameObject errorText;
+    public Text acceptText;
 
     public void Play()
     {
@@ -27,12 +27,15 @@ public class MainMenu : MonoBehaviour
     
         // Check if the integer is valid that is an unsigned int
         bool isInt = uint.TryParse(text, out uint value);
-        if (!isInt)
+        if (!isInt || value < 3)
         {
-            errorText.SetActive(true);
+            acceptText.text = "Value is not a valid int or is less than 3";
+            acceptText.color = Color.red;
             return;
         }
-        
+
+        acceptText.text = $"Ready to play a {value} x {value} board";
+        acceptText.color = Color.green;
         // Int is valid so set it in the game info object
         GameObject.Find("Game Info").GetComponent<GameInfo>().rowsCols = (int)value;
     }

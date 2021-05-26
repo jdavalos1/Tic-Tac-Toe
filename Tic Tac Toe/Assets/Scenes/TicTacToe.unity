@@ -1211,4 +1211,4 @@ MonoBehaviour:
     type: 3}
   oTurn: 0
   text: {fileID: 1364157540}
-  minRowsCols: 3
+  minRowsCols: 4
