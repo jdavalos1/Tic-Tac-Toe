@@ -682,6 +682,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3a9bb21cd384864baaa46c16f486712, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scrollSpeed: 2
+  maxDepthZ: -1
+  panSpeed: 10
 --- !u!1 &1210403685
 GameObject:
   m_ObjectHideFlags: 0
@@ -1211,4 +1214,4 @@ MonoBehaviour:
     type: 3}
   oTurn: 0
   text: {fileID: 1364157540}
-  minRowsCols: 4
+  minRowsCols: 3
